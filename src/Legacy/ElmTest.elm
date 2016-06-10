@@ -1,4 +1,4 @@
-module Test.Legacy exposing (Test, test, defaultTest, equals, suite, Assertion, assert, assertEqual, assertNotEqual, lazyAssert, assertionList, pass, fail, stringRunner, runSuite, runSuiteHtml)
+module Legacy.ElmTest exposing (Test, test, defaultTest, equals, suite, Assertion, assert, assertEqual, assertNotEqual, lazyAssert, assertionList, pass, fail, stringRunner, runSuite, runSuiteHtml)
 
 {-| An implementation of the legacy `ElmTest` module for backwards compatibility.
 
@@ -6,7 +6,7 @@ If you are currently using `ElmTest` and want to upgrade your version of
 `elm-test` to access the improved test runners, but still want your existing
 code to compile, just replace your current `import ElmTest` with this:
 
-    import Test.Legacy as ElmTest
+    import Legacy.ElmTest as ElmTest
 
 That's it!
 
