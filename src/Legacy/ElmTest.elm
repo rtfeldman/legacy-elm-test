@@ -34,27 +34,26 @@ Unfortunately, there is no workaround for this. Upgrading is the only way.
 -}
 
 import Test
-import Suite
+import Test.Outcome
 import Assert
 import Test.Runner.Html
 import Test.Runner.Log
 import Test.Runner.String
-import Random.Pcg as Random
 
 
 type alias Test =
-    Suite.Suite
+    Test.Suite
 
 
 type alias Assertion =
-    Test.Test
+    Test.Outcome.Outcome
 
 
 {-| A basic function to create a `Test`. Takes a name and an `Assertion`.
 -}
 test : String -> Assertion -> Test
-test desc test =
-    Suite.unit [ \_ -> Test.it desc test ]
+test desc outcome =
+    Test.it desc (\_ -> outcome)
 
 
 {-| In the original elm-test API, this would create a `Test` with a default name automatically chosen based on the inputs.
@@ -64,7 +63,7 @@ In this version, it creates a `Test` with no name instead.
 -}
 defaultTest : Assertion -> Test
 defaultTest test =
-    Suite.unit [ \_ -> test ]
+    Test.singleton (\_ -> test)
 
 
 {-| Create a `Test` which asserts equality between two expressions.
@@ -73,7 +72,7 @@ equality between the statements `(7 + 10)` and `(1 + 16)`.
 -}
 equals : a -> a -> Test
 equals expected actual =
-    Suite.unit [ \_ -> Assert.equal { expected = expected, actual = actual } ]
+    Test.singleton (\_ -> Assert.equal { expected = expected, actual = actual })
 
 
 {-| Convert a list of `Test`s to a test suite. Test suites are used to group
@@ -82,8 +81,8 @@ Takes a name and a list of `Test`s. Since suites are also of type `Test`, they
 can contain other suites, allowing for a more complex tree structure.
 -}
 suite : String -> List Test -> Test
-suite desc =
-    Suite.batch >> Suite.describe desc
+suite =
+    Test.describe
 
 
 {-| Basic function to assert that some expression is True
@@ -91,9 +90,9 @@ suite desc =
 assert : Bool -> Assertion
 assert condition =
     if condition then
-        Test.pass
+        Assert.success
     else
-        Test.fail "Assertion failed"
+        Assert.failure "Assertion failed"
 
 
 {-| Basic function to assert that two expressions are equal in value.
@@ -131,7 +130,7 @@ from another library but want to use ElmTest runners.
 -}
 pass : Assertion
 pass =
-    Test.pass
+    Assert.success
 
 
 {-| Create an assertion that always fails, for reasons described by the given
@@ -139,7 +138,7 @@ string.
 -}
 fail : String -> Assertion
 fail =
-    Test.fail
+    Assert.failure
 
 
 {-| Run a test or a test suite and return the results as a `String`. Mostly
@@ -149,7 +148,7 @@ probably use `elementRunner`.
 -}
 stringRunner : Test -> String
 stringRunner test =
-    Test.Runner.String.run (Random.initialSeed 42) test
+    Test.Runner.String.run test
         |> fst
 
 
