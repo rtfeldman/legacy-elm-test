@@ -34,26 +34,32 @@ Unfortunately, there is no workaround for this. Upgrading is the only way.
 -}
 
 import Test
-import Test.Outcome
 import Assert
 import Test.Runner.Html
 import Test.Runner.Log
 import Test.Runner.String
+import Html.App
+import Html
 
 
+{-| The core unit representing a runnable test, or a group of tests called a
+suite.
+-}
 type alias Test =
-    Test.Suite
+    Test.Test
 
 
+{-| The basic unit of testability.
+-}
 type alias Assertion =
-    Test.Outcome.Outcome
+    Assert.Assertion
 
 
 {-| A basic function to create a `Test`. Takes a name and an `Assertion`.
 -}
 test : String -> Assertion -> Test
 test desc outcome =
-    Test.it desc (\_ -> outcome)
+    Test.test desc (\_ -> outcome)
 
 
 {-| In the original elm-test API, this would create a `Test` with a default name automatically chosen based on the inputs.
@@ -62,8 +68,8 @@ For example, `defaultTest (assertEqual 5 5)` would have be named "5 == 5".
 In this version, it creates a `Test` with no name instead.
 -}
 defaultTest : Assertion -> Test
-defaultTest test =
-    Test.singleton (\_ -> test)
+defaultTest assertion =
+    Test.test "" (\_ -> assertion)
 
 
 {-| Create a `Test` which asserts equality between two expressions.
@@ -72,7 +78,8 @@ equality between the statements `(7 + 10)` and `(1 + 16)`.
 -}
 equals : a -> a -> Test
 equals expected actual =
-    Test.singleton (\_ -> Assert.equal { expected = expected, actual = actual })
+    Assert.equal { expected = expected, actual = actual }
+        |> defaultTest
 
 
 {-| Convert a list of `Test`s to a test suite. Test suites are used to group
@@ -90,9 +97,9 @@ suite =
 assert : Bool -> Assertion
 assert condition =
     if condition then
-        Assert.success
+        Assert.pass
     else
-        Assert.failure "Assertion failed"
+        Assert.fail "Assertion failed"
 
 
 {-| Basic function to assert that two expressions are equal in value.
@@ -130,7 +137,7 @@ from another library but want to use ElmTest runners.
 -}
 pass : Assertion
 pass =
-    Assert.success
+    Assert.pass
 
 
 {-| Create an assertion that always fails, for reasons described by the given
@@ -138,7 +145,7 @@ string.
 -}
 fail : String -> Assertion
 fail =
-    Assert.failure
+    Assert.fail
 
 
 {-| Run a test or a test suite and return the results as a `String`. Mostly
@@ -172,8 +179,13 @@ And then:
     $ node tests.js
 -}
 runSuite : Test -> Program Never
-runSuite =
-    Test.Runner.Log.run
+runSuite test =
+    Html.App.beginnerProgram
+        { model = ()
+        , update = \_ _ -> ()
+        , view = \_ -> Html.text "Check the console for useful output!"
+        }
+        |> Test.Runner.Log.run test
 
 
 {-| Run a suite as program with Html output.

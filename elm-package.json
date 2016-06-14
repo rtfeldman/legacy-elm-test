@@ -5,13 +5,12 @@
     "license": "MIT",
     "source-directories": [
         "src",
-        "../elm-test/src"
+        "../elm-test/src",
+        "../elm-test-runner/src"
     ],
     "exposed-modules": [
-        "Test",
-        "Suite",
-        "Assert",
-        "Fuzzer"
+        "Legacy.ElmTest",
+        "Legacy.Check.Test"
     ],
     "dependencies": {
         "elm-community/elm-check": "1.0.2 <= v < 2.0.0",
