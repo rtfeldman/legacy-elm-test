@@ -78,7 +78,7 @@ equality between the statements `(7 + 10)` and `(1 + 16)`.
 -}
 equals : a -> a -> Test
 equals expected actual =
-    Assert.equal { expected = expected, actual = actual }
+    Assert.equal expected actual
         |> defaultTest
 
 
@@ -105,15 +105,15 @@ assert condition =
 {-| Basic function to assert that two expressions are equal in value.
 -}
 assertEqual : a -> a -> Assertion
-assertEqual expected actual =
-    Assert.equal { expected = expected, actual = actual }
+assertEqual =
+    Assert.equal
 
 
 {-| Basic function to assser that two expressions are not equal.
 -}
 assertNotEqual : a -> a -> Assertion
-assertNotEqual expected actual =
-    Assert.notEqual { wasNot = expected, actual = actual }
+assertNotEqual =
+    Assert.notEqual
 
 
 {-| A lazy version of `assert`. Delays execution of the expression until tests
@@ -155,8 +155,7 @@ probably use `elementRunner`.
 -}
 stringRunner : Test -> String
 stringRunner test =
-    Test.Runner.String.run test
-        |> fst
+    (Test.Runner.String.run test).output
 
 
 {-| Run a suite as a program. Useful for tests run from the command line:
