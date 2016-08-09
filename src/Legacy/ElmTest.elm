@@ -34,10 +34,10 @@ Unfortunately, there is no workaround for this. Upgrading is the only way.
 -}
 
 import Test
-import Assert
+import Expect
 import Test.Runner.Html
-import Test.Runner.Log
-import Test.Runner.String
+import Legacy.LogRunner
+import Legacy.StringRunner
 import Html.App
 import Html
 
@@ -52,7 +52,7 @@ type alias Test =
 {-| The basic unit of testability.
 -}
 type alias Assertion =
-    Assert.Assertion
+    Expect.Expectation
 
 
 {-| A basic function to create a `Test`. Takes a name and an `Assertion`.
@@ -78,7 +78,7 @@ equality between the statements `(7 + 10)` and `(1 + 16)`.
 -}
 equals : a -> a -> Test
 equals expected actual =
-    Assert.equal expected actual
+    Expect.equal expected actual
         |> defaultTest
 
 
@@ -97,23 +97,23 @@ suite =
 assert : Bool -> Assertion
 assert condition =
     if condition then
-        Assert.pass
+        Expect.pass
     else
-        Assert.fail "Assertion failed"
+        Expect.fail "Assertion failed"
 
 
 {-| Basic function to assert that two expressions are equal in value.
 -}
 assertEqual : a -> a -> Assertion
 assertEqual =
-    Assert.equal
+    Expect.equal
 
 
-{-| Basic function to assser that two expressions are not equal.
+{-| Basic function to assert that two expressions are not equal.
 -}
 assertNotEqual : a -> a -> Assertion
 assertNotEqual =
-    Assert.notEqual
+    Expect.notEqual
 
 
 {-| A lazy version of `assert`. Delays execution of the expression until tests
@@ -121,7 +121,7 @@ are run.
 -}
 lazyAssert : (() -> Bool) -> Assertion
 lazyAssert fn =
-    assert (fn ())
+    Expect.true "lazyAssert assertion failed" (fn ())
 
 
 {-| Given a list of values and another list of expected values, generates a
@@ -137,7 +137,7 @@ from another library but want to use ElmTest runners.
 -}
 pass : Assertion
 pass =
-    Assert.pass
+    Expect.pass
 
 
 {-| Create an assertion that always fails, for reasons described by the given
@@ -145,7 +145,7 @@ string.
 -}
 fail : String -> Assertion
 fail =
-    Assert.fail
+    Expect.fail
 
 
 {-| Run a test or a test suite and return the results as a `String`. Mostly
@@ -155,7 +155,7 @@ probably use `elementRunner`.
 -}
 stringRunner : Test -> String
 stringRunner test =
-    (Test.Runner.String.run test).output
+    (Legacy.StringRunner.run test).output
 
 
 {-| Run a suite as a program. Useful for tests run from the command line:
@@ -184,7 +184,7 @@ runSuite test =
         , update = \_ _ -> ()
         , view = \_ -> Html.text "Check the console for useful output!"
         }
-        |> Test.Runner.Log.run test
+        |> Legacy.LogRunner.run test
 
 
 {-| Run a suite as program with Html output.
