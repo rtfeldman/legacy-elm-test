@@ -14,7 +14,6 @@ various different environments. See `Test.Runner.Log` for an example.
 import Random.Pcg as Random
 import Test exposing (Test)
 import Expect exposing (Expectation)
-import String
 import Test.Runner exposing (Runner(..))
 
 
