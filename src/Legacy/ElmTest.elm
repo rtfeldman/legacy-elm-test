@@ -38,7 +38,6 @@ import Expect
 import Test.Runner.Html
 import Legacy.LogRunner
 import Legacy.StringRunner
-import Html.App
 import Html
 
 
@@ -177,9 +176,9 @@ And then:
     $ elm-make Tests.elm --output tests.js
     $ node tests.js
 -}
-runSuite : Test -> Program Never
+runSuite : Test.Test -> Program Never () msg
 runSuite test =
-    Html.App.beginnerProgram
+    Html.beginnerProgram
         { model = ()
         , update = \_ _ -> ()
         , view = \_ -> Html.text "Check the console for useful output!"
@@ -189,6 +188,6 @@ runSuite test =
 
 {-| Run a suite as program with Html output.
 -}
-runSuiteHtml : Test -> Program Never
+runSuiteHtml : Test.Test -> Test.Runner.Html.TestProgram
 runSuiteHtml =
     Test.Runner.Html.run
